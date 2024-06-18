@@ -1,9 +1,13 @@
 from django.shortcuts import render,redirect
 from .models import CustomUser
 from django.contrib import messages
+from django.contrib.auth import authenticate,login,logout
+
 # Create your views here.
 def user_registration(request):
+    if 'useremail' in request.session:
 
+        return redirect('home')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -32,8 +36,59 @@ def user_registration(request):
             my_user = CustomUser.objects.create_user(email = email, username = username, password = password, is_special_user = special_user)
             my_user.save()
             print(my_user)
+            return redirect('user-login')
         else:
 
             messages.error(request, 'passwords do not match')
             
     return render(request,'accounts/registration.html')
+
+
+def user_login(request):
+
+    if 'useremail' in request.session:
+
+        return redirect('home')
+
+    if request.method == 'POST':
+        user_email = request.POST.get('email')
+        user_password = request.POST.get('password')
+
+        try:
+            user = CustomUser.objects.get(email=user_email)
+        except CustomUser.DoesNotExist:
+            user = None
+
+        if user is not None:
+            if not user.is_active:
+                messages.error(request, 'Your account has been blocked')
+                return redirect('user_login')
+                
+            user = authenticate(request, email=user_email, password=user_password)
+
+            if user is not None:
+                login(request,user)
+                request.session['useremail'] = user_email
+                return redirect('home')
+            else:
+                messages.error(request,'username or password is incorrect')
+        else:
+            messages.error(request, 'user does not exist')
+
+    return render(request, 'accounts/login.html')
+
+def user_logout(request):
+    
+    if 'useremail' in request.session:
+         
+        logout(request)
+        
+    return redirect('home')
+
+
+def home(request):
+
+    if 'useremail' not  in request.session:
+        return redirect('user-login')
+
+    return render(request, 'accounts/home.html')
