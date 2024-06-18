@@ -1,0 +1,38 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<div>
+    <h3 class="text-secondary p-3 d-flex justify-content-center">Login here</h2>
+        <div class="d-flex justify-content-center mt-5">
+
+            <form method="post">
+                {% csrf_token %}
+                {% if messages %}
+                {% for message in messages%}
+                <p class="text-danger message">{{message}}</p>
+                {% endfor %}
+                {% endif %}
+
+                <div class="form-group pb-3">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp"
+                        placeholder="Enter email" required>
+                </div>
+                <div class="form-group pb-3">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                        required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".message").fadeOut();
+        }, 3000);
+    });
+</script>
+{% endblock %}
