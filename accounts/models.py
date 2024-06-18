@@ -24,6 +24,11 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, username, password, **extra_fields)
 class CustomUser(AbstractUser):
     is_special_user = models.BooleanField(default = False)
+    email = models.EmailField(unique=True)
+
+    objects = CustomUserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.username
