@@ -123,7 +123,7 @@ def create_client(request):
                 'email': client.email,
                 'phone': client.phone,
             }})
-            
+
 def update_client(request,client_id):
 
     try:
@@ -143,6 +143,16 @@ def update_client(request,client_id):
             'email': client.email,
             'phone': client.phone,
         }})
+
+def delete_client(request,client_id):
+    try :
+        client = Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'client not found'})
+    
+    client.delete()
+
+    return JsonResponse({'status': 'success'})
 
 def get_clients(request):
     clients = Client.objects.all().values('id', 'name', 'email', 'phone')
