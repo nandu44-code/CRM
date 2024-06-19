@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
-from .models import CustomUser
+from .models import CustomUser,Client
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
+from django.http import JsonResponse
 
 # Create your views here.
 def user_registration(request):
@@ -69,7 +70,11 @@ def user_login(request):
             if user is not None:
                 login(request,user)
                 request.session['useremail'] = user_email
-                return redirect('home')
+                print(user.is_special_user,'special users')
+                if user.is_special_user:
+                    return redirect('special-user-home')
+                else:
+                    return redirect('home')
             else:
                 messages.error(request,'username or password is incorrect')
         else:
@@ -92,3 +97,53 @@ def home(request):
         return redirect('user-login')
 
     return render(request, 'accounts/home.html')
+
+def special_user_home(request):
+
+    if 'useremail' not  in request.session:
+        return redirect('user-login')
+
+    return render(request, 'accounts/special_user_home.html')
+
+
+def create_client(request):
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+
+
+        client = Client(name=name,email=email,phone=phone)
+        client.save()
+
+        return JsonResponse({'status': 'success', 'client': {
+                'id':client.id,
+                'name': client.name,
+                'email': client.email,
+                'phone': client.phone,
+            }})
+            
+def update_client(request,client_id):
+
+    try:
+        client = Client.objects.get(id=client_id)
+
+    except Client.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Client not found'})
+
+    client.name = request.POST.get('name', client.name)
+    client.email = request.POST.get('email', client.email)
+    client.phone = request.POST.get('phone', client.phone)
+    client.save()
+
+    return JsonResponse({'status': 'success', 'client': {
+            'id':client.id,
+            'name': client.name,
+            'email': client.email,
+            'phone': client.phone,
+        }})
+
+def get_clients(request):
+    clients = Client.objects.all().values('id', 'name', 'email', 'phone')
+    return JsonResponse(list(clients), safe=False)
