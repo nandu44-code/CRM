@@ -96,7 +96,9 @@ def home(request):
     if 'useremail' not  in request.session:
         return redirect('user-login')
 
-    return render(request, 'accounts/home.html')
+    count = Client.objects.all().count()
+    
+    return render(request, 'accounts/home.html', {'count': count})
 
 def special_user_home(request):
 

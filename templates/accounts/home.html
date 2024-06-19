@@ -1,5 +1,30 @@
 {% extends 'accounts/base.html' %}
+
 {% block content %}
-<p class="text-primary">this is the homepage</p>
-<button><a href="{% url 'user-logout' %}">logout</a></button>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center mt-5">
+            <p id="current-time" class="text-primary display-6 mt-3"></p>
+            <h1 class="display-4 mb-4">Welcome to Your Dashboard</h1>
+            <p class="lead text-muted">This is the homepage of your application.</p>
+            <hr class="my-6">
+            <h2 class="text-danger">Total Number of Clients In this Application: {{ count }}</h2>
+            <button class="btn btn-lg btn-danger mt-4"><a href="{% url 'user-logout' %}" class="text-white">Logout</a></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const currentTime = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('current-time').textContent = `Current Time: ${currentTime}`;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+</script>
 {% endblock %}
