@@ -11,5 +11,6 @@ urlpatterns = [
     path('update-client/<int:client_id>/', views.update_client, name='update-client'),
     path('delete-client/<int:client_id>/', views.delete_client, name='delete-client'),
     path('get-clients', views.get_clients, name='get-clients'),
+    path('error-page', views.error, name='error-page'),
 
 ]

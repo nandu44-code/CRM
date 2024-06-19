@@ -3,7 +3,7 @@ from .models import CustomUser,Client
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 from django.http import JsonResponse
-
+from .utils import is_special_user
 # Create your views here.
 def user_registration(request):
     if 'useremail' in request.session:
@@ -100,6 +100,7 @@ def home(request):
     
     return render(request, 'accounts/home.html', {'count': count})
 
+@is_special_user
 def special_user_home(request):
 
     if 'useremail' not  in request.session:
@@ -159,3 +160,7 @@ def delete_client(request,client_id):
 def get_clients(request):
     clients = Client.objects.all().values('id', 'name', 'email', 'phone')
     return JsonResponse(list(clients), safe=False)
+
+def error(request):
+    
+    return render(request, 'accounts/error.html')
